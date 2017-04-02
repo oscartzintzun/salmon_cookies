@@ -1,164 +1,111 @@
-Body {
-  width: 100%;
-  margin: auto;
+// Store Objects
+var CookieStore = function(location, min, max, avgSale) {
+    this.location = location;
+    this.min = min;
+    this.max = max;
+    this.avgSale = avgSale;
+    this.cookieSimArray = [];
+    this.custHourlySim = function() {
+        return Math.floor(((Math.random() * (this.max - this.min)) + this.min) * this.avgSale);
+    };
 }
 
-.container {
-  width: 960px
-  margin: 0 auto;
+var storesArray = new Array();
+storesArray.push(new CookieStore("Pioneer Place", 17, 88, 5.2));
+storesArray.push(new CookieStore("Portland Airport", 6, 24, 1.2));
+storesArray.push(new CookieStore("Washington Square", 11, 38, 1.9));
+storesArray.push(new CookieStore("Sellwood", 20, 48, 3.3));
+storesArray.push(new CookieStore("Pearl District", 3, 24, 2.6));
+
+var storeHours = ["10am", "11am", "12pm", "1pm", "2pm", "3pm", "4pm", "5pm"];
+
+// function to build table
+function domAppend(element, text, parent, index) {
+    var elementName = document.createElement(element);
+    var textNode = document.createTextNode(text);
+    elementName.appendChild(textNode);
+    var elementPosition = document.getElementsByTagName(parent)[index];
+    elementPosition.appendChild(elementName);
 }
 
-.header {
-  background: #FF3366;
-  width: 100%;
-  top: 0;
-  position: fixed;
+//Create table header
+function tableHeader() {
+    for (var tableIndex = 0; tableIndex < storeHours.length; tableIndex++) {
+        domAppend("th", storeHours[tableIndex], "tr", 0);
+    };
+    domAppend("th", "Total", "tr", 0);
 }
+tableHeader()
 
-footer {
-    text-align: center;
-    bottom : 0;
-    height : 40px;
-    margin-top : 40px;
-  }
+// Create store rows, get store names as row headers, populate with sales simulations
+for (var storeIndex = 0; storeIndex < storesArray.length; storeIndex++) {
+    cookiesHourlySim(storesArray[storeIndex]); // call function for each store
 
-.Logo {
-  float:left;
-  font-famliy: "Helvetica";
-    font-size: 15px;
-}
+    function cookiesHourlySim(store) {
+        console.log(storesArray.length);
+        var cookiesTotal = 0; // sums hourly estimates for daily total
+        domAppend("tr", "", "tbody", 0); //create new row
+        domAppend("th", store.location, "tr", storeIndex + 1); //add store name
 
-a {
-  text-decoration: none;
-  color: white;
-}
+        for (var tableIndex = 0; tableIndex < storeHours.length; tableIndex++) {
+            var cookiePurchase = store.custHourlySim(); // estimates sales for hour
+            cookiesTotal += cookiePurchase; // sums total sales
+            domAppend("td", cookiePurchase, "tr", storeIndex + 1); //adds results to table
+            store.cookieSimArray.push(cookiePurchase); // push estimate to store array
+        };
 
-li{
-  list-style: none;
-  float: left;
-  margin-left: 15px;
-  padding-top: 5px;
-}
+        // add total sales to bottom of store list
+        domAppend("th", cookiesTotal, "tr", storeIndex + 1);
+    }
+};
 
-.nav{
-  float: right;
-  margin-right:150px;
-  padding-top: 10px;
-}
+//create store list for menu
+function domAppendClass(element, text, className, index) {
+    var elementName = document.createElement(element);
+    elementName.innerHTML = text
+    var elementPosition = document.getElementsByClassName(className)[index];
+    elementPosition.appendChild(elementName);
+};
 
-body {
-  color: #FF3366;
-}
+for (var storeIndex = 0; storeIndex < storesArray.length; storeIndex++) {
+    var storeLink = "<a href ='#'>" + storesArray[storeIndex].location + "</a>";
+    domAppendClass("li", storeLink, "submenu", 0); // call function for each store
+};
 
-img {
-	width:100px;
-	height:100px;
-}
-table {
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
-}
-thead, tbody {
-    background-color: #FF3366;
-}
-th {
-    width: 100px;
-    height: 40px;
-    color: white;
-    text-align: center;
-    font-weight: bold;
-}
-td {
-    color: white;
-    list-style-type: none;
-    text-align: center;
-}
-legend {
-    font-family: Open Sans, sans-serif;
-    color: #FF3366;
-}
-label {
-    font-family: Georgia, serif;
-    color: #FF3366;
-    margin-left: 2%;
-}
-fieldset {
-    border: 1px solid #FF3366;
-}
-input[type="text"], input[type="number"] {
-    font-family: Georgia, serif;
-    color: #FF3366;
-}
-input[type="number"] {
-    width: 50px;
-}
-input[type="button"] {
-    background-color: #FF3366;
-    border: none;
-    font-family: Open Sans, sans-serif;
-    font-size: .8em;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 12px;
-    display: inline-block;
-    float: right;
-    margin-right: 50px;
-}
-input.required {
-    background-color: #B1522A;
-    color: #CAB467;
-}
-.main {
-    margin: 0;
-    padding: 0;
-    height: 1em;
-}
-.main li {
-    list-style: none;
-    float: right;
-    border-left: 1px solid #FF3366;
-    width: 7em;
-}
-.main li a:not(.active) {
-    display: block;
-    padding: 3px 8px;
-    background-color: #B1522A;
-    color: #CAB467;
-    text-decoration: none;
-}
-.active {
-    display: block;
-    padding: 3px 8px;
-    background-color: #CAB467;
-    color: #302C26;
-    text-decoration: none;
-}
-.main li ul {
-    display: none;
-    width: 10em;
-    background-color: #302C26;
-}
-.main li:hover ul {
-    display: block;
-    position: absolute;
-    margin: 0;
-    padding: 0;
-    background-color: #302C26;
-}
-.main li:hover li {
-    float: none;
-}
-.main li:hover li a {
-    background-color: #B1522A;
-    border-bottom: 1px solid #CAB467;
-    color: #CAB467;
-}
-.main li li a:hover {
-    background-color: #302C26;
-}
-
-.small {
-  font-size: 0.8em;
-}
+function evaluateForm(newStoreData) {
+    var formIsValid = true;
+    if (newStoreData.location.value == "") {
+        newStoreData.location.setAttribute("class", "required");
+        formIsValid = false;
+    }
+    if (newStoreData.min.value == "") {
+        newStoreData.min.setAttribute("class", "required");
+        formIsValid = false;
+    }
+    if (newStoreData.max.value == "") {
+        newStoreData.max.setAttribute("class", "required");
+        formIsValid = false;
+    }
+    if (newStoreData.avgSale.value == "") {
+        newStoreData.avgSale.setAttribute("class", "required");
+        formIsValid = false;
+    }
+    console.log(formIsValid);
+    if (formIsValid) {
+        storesArray.push(new CookieStore(newStoreData.location.value, newStoreData.min.value, newStoreData.max.value, newStoreData.avgSale.value));
+        cookiesHourlySim(storesArray[storesArray.length - 1]);
+        var storeLink = "<a href ='#'>" + storesArray[storesArray.length - 1].location + "</a>";
+        domAppendClass("li", storeLink, "submenu", 0);
+        document.getElementById("myForm").reset();
+        storeIndex = storesArray.length
+        window.scrollTo(0, 0);
+        var resetClass = document.querySelectorAll('input.required');
+        console.log(resetClass);
+        if (resetClass.length > 0) {
+            for (var i = 0; i < resetClass.length; i++) {
+                console.log(i, resetClass[i]);
+                resetClass[i].classList.remove("required");
+            }
+        }
+    };
+};
